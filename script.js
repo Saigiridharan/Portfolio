@@ -28,7 +28,59 @@ function loadScript(src){
   });
 }
 
+function injectPdfStyles(){
+  const css = `
+.pdf-theme {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  -webkit-print-color-adjust: exact;
+}
+.pdf-theme .bg-orb,
+.pdf-theme .nav .orb,
+.pdf-theme .orb-1,
+.pdf-theme .orb-2,
+.pdf-theme .actions .btn.print-only {
+  display: none !important;
+}
+.pdf-theme .container {
+  width: 180mm;
+  max-width: 180mm;
+  margin: 0 auto;
+  padding: 12mm 12mm;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.pdf-theme .card,
+.pdf-theme .contact-card,
+.pdf-theme .hero-grid > * {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  color: inherit !important;
+}
+.pdf-theme a { color: #0645ad !important; text-decoration: underline; }
+.pdf-theme body {
+  font-size: 11pt;
+  line-height: 1.3;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+.pdf-theme .page-break { page-break-before: always; }
+@media print {
+  body { background: #fff !important; color: #0f172a !important; }
+  .bg-orb, .orb-1, .orb-2, .nav { display: none !important; }
+  .container { width: auto !important; padding: 8mm !important; }
+}
+  `;
+  const style = document.createElement('style');
+  style.type = 'text/css';
+  style.id = 'pdf-theme-styles';
+  style.appendChild(document.createTextNode(css));
+  document.head.appendChild(style);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  injectPdfStyles();
+
   // Add "Download PDF" button to header actions if present
   const actions = document.querySelector('.actions');
   if (actions && !document.getElementById('downloadPdfBtn')) {
