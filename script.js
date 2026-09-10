@@ -9,6 +9,25 @@ toggle.addEventListener('click', () => {
   localStorage.setItem('theme', next);
 });
 
+// Mobile menu toggle
+const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+
+if (menuToggle) {
+  menuToggle.addEventListener('click', () => {
+    menuToggle.classList.toggle('active');
+    navLinks.classList.toggle('active');
+  });
+
+  // Close menu when clicking a link
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      menuToggle.classList.remove('active');
+      navLinks.classList.remove('active');
+    });
+  });
+}
+
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) entry.target.classList.add('visible');
@@ -17,7 +36,7 @@ const observer = new IntersectionObserver(entries => {
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// --- New: contact cleanup + PDF download button + dynamic html2pdf loader ---
+// --- New: PDF download button + dynamic html2pdf loader ---
 function loadScript(src){
   return new Promise(resolve => {
     const s = document.createElement('script');
@@ -51,7 +70,6 @@ function injectPdfStyles(){
   box-shadow: none !important;
 }
 .pdf-theme .card,
-.pdf-theme .contact-card,
 .pdf-theme .hero-grid > * {
   background: transparent !important;
   box-shadow: none !important;
@@ -81,17 +99,10 @@ function injectPdfStyles(){
 document.addEventListener('DOMContentLoaded', () => {
   injectPdfStyles();
 
-  // Add "Download PDF" button to header actions if present
-  const actions = document.querySelector('.actions');
-  if (actions && !document.getElementById('downloadPdfBtn')) {
-    const btn = document.createElement('button');
-    btn.id = 'downloadPdfBtn';
-    btn.className = 'btn primary';
-    btn.type = 'button';
-    btn.textContent = 'Download PDF';
-    actions.appendChild(btn);
-
-    btn.addEventListener('click', async () => {
+  // Download PDF button functionality
+  const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+  if (downloadPdfBtn) {
+    downloadPdfBtn.addEventListener('click', async () => {
       if (typeof html2pdf === 'undefined') {
         // load html2pdf bundle from CDN
         await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js');
@@ -120,57 +131,5 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => document.body.classList.remove('pdf-theme'), 500);
       }
     });
-  }
-
-  // Contact section cleanup: remove descriptions and keep only Gmail contact
-  const contact = document.getElementById('contact') || document.querySelector('[id="contact"]');
-  if (contact) {
-    // Remove descriptive paragraphs or small description blocks
-    const desc = contact.querySelector('.description, .contact-description, p');
-    if (desc) desc.remove();
-
-    // Collect candidate contact nodes (broad selector to cover multiple markup styles)
-    const candidates = Array.from(contact.querySelectorAll('.card, .contact-card, .contact-item, li, a, div'));
-
-    // Find a node that already contains a gmail address
-    let gmailNode = candidates.find(c => /gmail|@gmail\.com/i.test(c.textContent));
-    if (!gmailNode) {
-      // fallback: any node with an email-like pattern
-      gmailNode = candidates.find(c => /@/.test(c.textContent));
-    }
-
-    // Hide/comment other nodes visually (keeps source intact but hides from view)
-    candidates.forEach(c => {
-      if (c !== gmailNode) {
-        c.style.display = 'none';
-        c.setAttribute('data-commented', 'true');
-      }
-    });
-
-    // Ensure the Gmail node contains the requested email and is a mailto link
-    if (gmailNode) {
-      // replace any existing email with the provided one
-      gmailNode.innerHTML = gmailNode.innerHTML.replace(/([\w.+-]+@[\w-]+\.[\w.-]+)/g, 'giridharan.sai@gmail.com');
-      if (!/giridharan\.sai@gmail\.com/i.test(gmailNode.textContent)) {
-        gmailNode.innerHTML = '<a href="mailto:giridharan.sai@gmail.com">giridharan.sai@gmail.com</a>';
-      } else {
-        const a = gmailNode.querySelector('a') || gmailNode;
-        if (a.tagName !== 'A') {
-          const link = document.createElement('a');
-          link.href = 'mailto:giridharan.sai@gmail.com';
-          link.textContent = 'giridharan.sai@gmail.com';
-          gmailNode.innerHTML = '';
-          gmailNode.appendChild(link);
-        } else {
-          a.href = 'mailto:giridharan.sai@gmail.com';
-        }
-      }
-    } else {
-      // If no candidate found, create a simple contact entry
-      const div = document.createElement('div');
-      div.className = 'contact-card';
-      div.innerHTML = '<a href="mailto:giridharan.sai@gmail.com">giridharan.sai@gmail.com</a>';
-      contact.appendChild(div);
-    }
   }
 });

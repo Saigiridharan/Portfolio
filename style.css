@@ -85,6 +85,7 @@ a { color: inherit; text-decoration: none; }
   justify-content: space-between;
   gap: 18px;
   padding: 14px 0;
+  flex-wrap: wrap;
 }
 
 .brand { display: flex; align-items: center; gap: 12px; }
@@ -98,10 +99,42 @@ a { color: inherit; text-decoration: none; }
   background: linear-gradient(135deg, var(--primary), var(--primary-2));
   color: white;
   font-weight: 800;
+  flex-shrink: 0;
 }
 
 .brand-name { font-weight: 800; }
 .brand-sub { color: var(--muted); font-size: 12px; margin: 0; }
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  margin: 0;
+}
+
+.menu-toggle span {
+  width: 24px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.menu-toggle.active span:nth-child(1) {
+  transform: rotate(45deg) translate(10px, 10px);
+}
+
+.menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
 
 .nav-links { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
 .nav-links a { color: var(--muted); font-weight: 500; font-size: 14px; transition: color .2s ease; }
@@ -196,6 +229,11 @@ h3 {
   color: var(--muted);
   max-width: 600px;
   margin: 0 0 32px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hero-actions {
@@ -424,50 +462,76 @@ section:first-of-type {
   color: var(--primary);
 }
 
-/* Contact Section Styles */
-#contact {
-  padding: 66px 0;
-  border-top: 1px solid var(--border);
+.reveal {
+  animation: reveal-in 0.8s ease-out forwards;
+  opacity: 0;
 }
 
-#contact h2 {
-  margin-bottom: 32px;
-  text-align: center;
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.contact-card {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px;
-  border: 2px solid var(--primary);
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--primary) 10%, var(--card));
-  max-width: 500px;
-  margin: 0 auto;
-  transition: transform .3s ease, box-shadow .3s ease;
-}
-
-.contact-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow);
-}
-
-.contact-card a {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary);
-  text-decoration: none;
-  transition: color .3s ease;
-  cursor: pointer;
-}
-
-.contact-card a:hover {
-  color: var(--primary-2);
-  text-decoration: underline;
-}
-
+/* Mobile Responsive Styles */
 @media (max-width: 768px) {
+  .nav-wrap {
+    flex-wrap: nowrap;
+  }
+
+  .brand {
+    flex: 1;
+  }
+
+  .brand div {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
+    backdrop-filter: blur(16px);
+    flex-direction: column;
+    gap: 0;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    width: 100%;
+  }
+
+  .nav-links.active {
+    max-height: 400px;
+  }
+
+  .nav-links a {
+    padding: 12px 8px;
+    display: block;
+    width: 100%;
+  }
+
+  .actions {
+    gap: 8px;
+  }
+
+  .actions .btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
   h1 {
     font-size: 2.5rem;
   }
@@ -485,35 +549,71 @@ section:first-of-type {
     max-width: 100%;
   }
 
-  .nav-links {
-    gap: 12px;
-  }
-
-  .nav-links a {
-    font-size: 13px;
-  }
-
-  .contact-card {
-    padding: 24px;
-  }
-
-  .contact-card a {
-    font-size: 1.2rem;
+  .lead {
+    -webkit-line-clamp: 2;
+    font-size: 1rem;
   }
 }
 
-.reveal {
-  animation: reveal-in 0.8s ease-out forwards;
-  opacity: 0;
-}
-
-@keyframes reveal-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+@media (max-width: 480px) {
+  .container {
+    width: calc(100% - 16px);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .nav-wrap {
+    padding: 10px 0;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+
+  .brand-name {
+    font-size: 0.9rem;
+  }
+
+  .brand-sub {
+    font-size: 10px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    line-height: 1.3;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .hero {
+    padding: 48px 0 24px 0;
+  }
+
+  section {
+    padding: 48px 0;
+  }
+
+  .actions .btn {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .btn {
+    padding: 9px 12px;
+  }
+
+  .hero-panel {
+    gap: 10px;
+  }
+
+  .profile-card {
+    padding: 16px;
+  }
+
+  .lead {
+    -webkit-line-clamp: 2;
+    font-size: 0.95rem;
   }
 }
